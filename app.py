@@ -23,7 +23,7 @@ def get_gemini_response(uploaded_file, user_question,generative_model):
                 Answer : 
                 Reasoning:
                 
-                Answer the question accurately based on the information in the PDF document. Provide a clear and concise response along with reasoning.
+                Answer the question accurately based on the information in the PDF document. Provide a clear and concise response along with reasoning, Do not include Question in return response.
                 """
             
             response = generative_model.generate_content(
