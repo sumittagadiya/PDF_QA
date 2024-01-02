@@ -4,4 +4,3 @@ python-dotenv
 pdfplumber
 langchain
 langchain-google-genai
-chromadb
