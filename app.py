@@ -69,7 +69,7 @@ def get_RAG_gemini_response(pdf_text,question):
         # with pdfplumber.open(uploaded_file) as pdf:
         #     pages = [page.extract_text() for page in pdf.pages]
         # documents = "\n".join(pages)
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=5000, chunk_overlap=0)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=0)
         texts = text_splitter.split_text(pdf_text)
         logging.info(f"length of splitted text = {len(texts)}")
 
