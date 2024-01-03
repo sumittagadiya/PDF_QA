@@ -80,7 +80,8 @@ def get_RAG_gemini_response(pdf_text,question):
         vector_index = db.as_retriever(search_type="similarity", search_kwargs={"k":4},return_source_documents=False)
 
         docs = vector_index.get_relevant_documents(question)
-    
+        logging.info(f"Length of retrieved docs = {len(docs)}")
+        
         prompt_template = """You are a helpful and informative bot that answers questions using text from the reference context included below. \
                             Be sure to respond in a complete sentence, being comprehensive, including all relevant background information. \
                             However, you are talking to a non-technical audience, so be sure to break down complicated concepts and \
@@ -115,9 +116,9 @@ def get_RAG_gemini_response(pdf_text,question):
 
 st.set_page_config(page_title='PDF Q&A App')
 # App layout
-st.title("PDF Q&A with Google Gemini Pro")
+st.title("Document Q&A with Google Gemini Pro")
 logging.info("\n*********************** LOGGING STARTED **********************************\n")
-uploaded_file = st.file_uploader("Upload a PDF document", type="pdf")
+uploaded_file = st.file_uploader("Upload a PDF or TXT document", type=["pdf", "txt"])
 
 # Query text
 user_question = st.text_input('Enter your question:', placeholder = 'Please provide a short summary.', disabled=not uploaded_file)
@@ -131,9 +132,15 @@ if submitted:
 
     with st.spinner('Fetching an answer...'):
         try:
-            with pdfplumber.open(uploaded_file) as pdf:
-                pages = [page.extract_text() for page in pdf.pages]
-            documents = "\n".join(pages)
+            if uploaded_file.type == "application/pdf":
+                with pdfplumber.open(uploaded_file) as pdf:
+                    pages = [page.extract_text() for page in pdf.pages]
+                documents = "\n".join(pages)
+
+            elif uploaded_file.type == "text/plain":
+                # For a text file, simply read its contents
+                documents = str(uploaded_file.read(), 'utf-8')
+                
             generative_model = genai.GenerativeModel('gemini-pro')
             token_count = generative_model.count_tokens(documents).total_tokens
 
